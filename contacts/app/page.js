@@ -14,15 +14,27 @@ export default function Home() {
 
   useEffect(() => {
     if (!enviar) {
-      return
+      return;
     }
 
-    setDados((prev) => ({ ...prev, id: Date.now() }))
-    setLista((prev) => [...prev, dados])
-    setDados({ nome: "", numero: "" })
-    setEnviar(false)
-  }, [enviar])
+    if (dados.nome.trim() === "" || dados.numero.trim().length < 9){
+      alert("Dados inválidos! confira o nome e número digitado!");
+      setEnviar(false);
+      return;
+    }
 
+    const novoContato = {
+      ...dados,
+      id: crypto.randomUUID()
+    };
+
+    setLista((prev) => [...prev, novoContato]);
+    setDados({ nome: "", numero: "" });
+    setEnviar(false);
+  }, [enviar]);
+
+
+  const onRemove = (id) => setLista((prev) => prev.filter((c => c.id !== id)))
 
   return (
     <>
@@ -38,7 +50,12 @@ export default function Home() {
         </div>
       </BoxSearch>
       <Botao onClick={() => setEnviar(true)} />
-      <Lista Dados={lista} />
+
+      <h3>Filtar:</h3>
+      <Input onChange={(e) => L}/>
+      
+      <h1>Contatos ({lista.length})</h1>
+      <Lista Dados={lista} onRemove={onRemove}/>
     </>
   );
 }
